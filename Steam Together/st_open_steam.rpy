@@ -43,11 +43,12 @@ init 5 python:
     addEvent(
         Event(
             persistent.event_database,
-            eventlabel="moni_openyour_steam",  
-            category=['program'],
+            eventlabel="st_openyour_steam",  
+            category=['steam'],
             prompt="Could you open Steam for me?",
             random=False,
             pool=True,
+            unlocked=True,
         )
     )
 
@@ -85,7 +86,7 @@ screen mas_game_menu():
                 style "choice_button"
                 xfill True
 
-label moni_openyour_steam:
+label st_openyour_steam:
     $ steam_exe_path = "C:\\Program Files (x86)\\Steam\\Steam.exe"
 
     if os.path.exists(steam_exe_path):
@@ -111,7 +112,7 @@ label moni_openyour_steam:
                     m 1tublb "I might get jealous if you spend too much time on another game without me."
                     m 1hub "If you need a break, I'll be here waiting for you!"
                     m 3fubsb "Anyway, I hope you have a lot of fun!"
-                    $ mas_idle_mailbox.send_idle_cb("moni_openyour_steam_callback")
+                    $ mas_idle_mailbox.send_idle_cb("st_openyour_steam_callback")
                     return "idle"
 
                 "I'll play later.":
@@ -119,7 +120,20 @@ label moni_openyour_steam:
                     m 3hub "If you change your mind, just let me know."
                     return
 
-label moni_openyour_steam_callback:
+        elif selected_game == "cancel":
+            m 1eud "Oh, you decided not to choose a game?"
+            m 2sub "That's okay! Sometimes it's nice to just browse."
+            m 3hub "If you want to play something later, just let me know!"
+            return
+
+    else:
+        m 2wud "Hmm, I can't seem to find Steam on your computer..."
+        m 1tku "Are you sure it's installed?"
+        m 5hub "If you need help, I can try again later!"
+    
+    return
+
+label st_openyour_steam_callback:
     $ import datetime
     
     if persistent.last_game_time:
@@ -130,7 +144,7 @@ label moni_openyour_steam_callback:
         $ time_diff = 0
 
     if time_diff < 300:
-        m 1 wud "Oh, you came back very quickly!"
+        m 3wub "Oh, you came back very quickly!"
         m 1ttb "Changed your mind or were you doing a speedrun?~"
 
         $ _history_list.pop()
